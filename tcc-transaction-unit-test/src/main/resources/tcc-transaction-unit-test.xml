@@ -10,7 +10,7 @@
     <bean class="org.mengyun.tcctransaction.spring.recover.DefaultRecoverConfig">
         <property name="maxRetryCount" value="30"/>
         <property name="recoverDuration" value="5"/>
-        <property name="cronExpression" value="0/15 * * * * ?"/>
+        <property name="cronExpression" value="0/5 * * * * ?"/>
     </bean>
 
     <!--<bean id="transactionRepository"-->
@@ -26,9 +26,15 @@
     <!--<bean id="tccDataSource" class="org.apache.commons.dbcp.BasicDataSource"-->
           <!--destroy-method="close">-->
         <!--<property name="driverClassName" value="com.mysql.jdbc.Driver"/>-->
+<<<<<<< HEAD
         <!--<property name="url" value="jdbc:mysql://127.0.0.1:3306/TCC"/>-->
         <!--<property name="username" value="root"/>-->
         <!--<property name="password" value=""/>-->
+=======
+        <!--<property name="url" value="jdbc:mysql://localhost:3306/TCC"/>-->
+        <!--<property name="username" value="root"/>-->
+        <!--<property name="password" value="root"/>-->
+>>>>>>> master-1.2.x
     <!--</bean>-->
 
     <!--<bean id="transactionRepository"-->

@@ -1,7 +1,7 @@
 package org.mengyun.tcctransaction.unittest.entity;
 
 /**
- * Created by changmingxie on 12/3/15.
+ * Created by liangjinjing on 12/3/15.
  */
 public class AccountRecord {
 

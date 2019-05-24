@@ -8,7 +8,7 @@ import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 
 /**
- * Created by changming.xie on 6/2/16.
+ * Created by liangjinjing on 6/2/16.
  */
 public class RecoverScheduledJob {
 
@@ -27,7 +27,11 @@ public class RecoverScheduledJob {
             jobDetail.setName("transactionRecoveryJob");
             jobDetail.setConcurrent(false);
             jobDetail.afterPropertiesSet();
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> master-1.2.x
             CronTriggerFactoryBean cronTrigger = new CronTriggerFactoryBean();
             cronTrigger.setBeanName("transactionRecoveryCronTrigger");
             cronTrigger.setCronExpression(transactionConfigurator.getRecoverConfig().getCronExpression());
@@ -48,15 +52,15 @@ public class RecoverScheduledJob {
         this.transactionRecovery = transactionRecovery;
     }
 
-    public void setTransactionConfigurator(TransactionConfigurator transactionConfigurator) {
-        this.transactionConfigurator = transactionConfigurator;
-    }
-
     public Scheduler getScheduler() {
         return scheduler;
     }
 
     public void setScheduler(Scheduler scheduler) {
         this.scheduler = scheduler;
+    }
+
+    public void setTransactionConfigurator(TransactionConfigurator transactionConfigurator) {
+        this.transactionConfigurator = transactionConfigurator;
     }
 }

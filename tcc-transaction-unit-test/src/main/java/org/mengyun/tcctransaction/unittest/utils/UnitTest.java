@@ -1,7 +1,7 @@
 package org.mengyun.tcctransaction.unittest.utils;
 
 /**
- * Created by changmingxie on 12/4/15.
+ * Created by liangjinjing on 12/4/15.
  */
 public class UnitTest {
 

@@ -2,7 +2,11 @@ package org.mengyun.tcctransaction.unit.test;
 
 import org.junit.Assert;
 import org.junit.Test;
+<<<<<<< HEAD
 import org.mengyun.tcctransaction.Transaction;
+=======
+import org.mengyun.tcctransaction.SystemException;
+>>>>>>> master-1.2.x
 import org.mengyun.tcctransaction.recover.TransactionRecovery;
 import org.mengyun.tcctransaction.unittest.client.TransferService;
 import org.mengyun.tcctransaction.unittest.entity.AccountRecord;
@@ -14,7 +18,7 @@ import org.mengyun.tcctransaction.unittest.utils.UnitTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Created by changmingxie on 12/3/15.
+ * Created by liangjinjing on 12/3/15.
  */
 public class TransferServiceTest extends AbstractTestCase {
 
@@ -49,6 +53,20 @@ public class TransferServiceTest extends AbstractTestCase {
 
         Assert.assertTrue(subAccountFrom.getBalanceAmount() == 50);
         Assert.assertTrue(subAccountTo.getBalanceAmount() == 250);
+    }
+
+    @Test
+    public void testTransferWithMandatoryPropagtion() throws InterruptedException {
+
+        //given
+        buildAccount();
+
+        //when
+        try {
+            transferService.transferWithMandatoryPropagation(1, 2, 50);
+        } catch (SystemException e) {
+            Assert.assertTrue(e.getMessage().startsWith("no active compensable transaction while propagation is mandatory for method"));
+        }
     }
 
     @Test
@@ -162,7 +180,7 @@ public class TransferServiceTest extends AbstractTestCase {
 
         try {
             //waiting the auto recovery schedule
-            Thread.sleep(1000 * 30L);
+            Thread.sleep(1000 * 10);
         } catch (InterruptedException e) {
             throw new Error(e);
         }
@@ -184,7 +202,7 @@ public class TransferServiceTest extends AbstractTestCase {
             transferService.transferWithMultipleConsumer(1, 2, 70);
 
         } catch (Throwable e) {
-            System.out.println(e);
+
         }
 
         System.out.println("begin recovery");
@@ -198,7 +216,7 @@ public class TransferServiceTest extends AbstractTestCase {
 
         try {
             //waiting the auto recovery schedule
-            Thread.sleep(1000 * 30L);
+            Thread.sleep(1000 * 10L);
         } catch (InterruptedException e) {
             throw new Error(e);
         }

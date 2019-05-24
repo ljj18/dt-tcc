@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.*;
 
 /**
- * Created by changmingxie on 12/3/15.
+ * Created by liangjinjing on 12/3/15.
  */
 @Service
 public class AccountRecordServiceProxy {
@@ -20,16 +20,18 @@ public class AccountRecordServiceProxy {
     private ExecutorService executorService = Executors.newFixedThreadPool(100);
 
     public void record(final TransactionContext transactionContext, final long accountId, final int amount) {
-        Future<Boolean> future = this.executorService
-                .submit(new Callable<Boolean>() {
-                    @Override
-                    public Boolean call() throws Exception {
-                        accountRecordService.record(transactionContext, accountId, amount);
-                        return true;
-                    }
-                });
+//        Future<Boolean> future = this.executorService
+//                .submit(new Callable<Boolean>() {
+//                    @Override
+//                    public Boolean call() throws Exception {
+//                        accountRecordService.record(transactionContext, accountId, amount);
+//                        return true;
+//                    }
+//                });
+//
+//        handleResult(future);
 
-        handleResult(future);
+        accountRecordService.record(transactionContext, accountId, amount);
 
     }
 

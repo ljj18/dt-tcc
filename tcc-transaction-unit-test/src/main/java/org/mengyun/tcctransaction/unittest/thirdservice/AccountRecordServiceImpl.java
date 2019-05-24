@@ -1,7 +1,7 @@
 package org.mengyun.tcctransaction.unittest.thirdservice;
 
 import org.mengyun.tcctransaction.api.TransactionContext;
-import org.mengyun.tcctransaction.Compensable;
+import org.mengyun.tcctransaction.api.Compensable;
 import org.mengyun.tcctransaction.unittest.entity.AccountRecord;
 import org.mengyun.tcctransaction.unittest.entity.AccountStatus;
 import org.mengyun.tcctransaction.unittest.repository.AccountRecordRepository;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Created by changmingxie on 10/25/15.
+ * Created by liangjinjing on 10/25/15.
  */
 @Service
 public class AccountRecordServiceImpl implements AccountRecordService {

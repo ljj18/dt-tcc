@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by changmingxie on 12/3/15.
+ * Created by liangjinjing on 12/3/15.
  */
 @Repository
 public class AccountRecordRepository {

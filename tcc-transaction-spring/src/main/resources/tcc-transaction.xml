@@ -4,45 +4,43 @@
        xmlns:aop="http://www.springframework.org/schema/aop" xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-    <aop:aspectj-autoproxy/>
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
 
+<<<<<<< HEAD
     <!--<context:component-scan base-package="org.mengyun.tcctransaction.spring"/>-->
 
     <bean id="tccApplicationContext" class="org.mengyun.tcctransaction.spring.support.TccApplicationContext"/>
+=======
+    <bean id="springBeanFactory" class="org.mengyun.tcctransaction.spring.support.SpringBeanFactory"/>
+>>>>>>> master-1.2.x
 
-    <bean id="tccTransactionConfigurator" class="org.mengyun.tcctransaction.spring.support.TccTransactionConfigurator">
+
+    <bean id="transactionConfigurator" class="org.mengyun.tcctransaction.spring.support.SpringTransactionConfigurator"
+          init-method="init"/>
+
+    <bean id="compensableTransactionAspect" class="org.mengyun.tcctransaction.spring.ConfigurableTransactionAspect"
+          init-method="init">
+        <property name="transactionConfigurator" ref="transactionConfigurator"/>
     </bean>
 
-    <bean id="transactionRecovery" class="org.mengyun.tcctransaction.recover.TransactionRecovery">
-        <property name="transactionConfigurator" ref="tccTransactionConfigurator"/>
-    </bean>
-
-    <bean id="compensableTransactionInterceptor"
-          class="org.mengyun.tcctransaction.interceptor.CompensableTransactionInterceptor">
-        <property name="transactionConfigurator" ref="tccTransactionConfigurator"/>
-    </bean>
-
-    <bean id="resourceCoordinatorInterceptor"
-          class="org.mengyun.tcctransaction.interceptor.ResourceCoordinatorInterceptor">
-        <property name="transactionConfigurator" ref="tccTransactionConfigurator"/>
-    </bean>
-
-    <bean id="tccCompensableAspect" class="org.mengyun.tcctransaction.spring.TccCompensableAspect">
-        <property name="compensableTransactionInterceptor" ref="compensableTransactionInterceptor"/>
-    </bean>
-
-    <bean id="transactionContextAspect" class="org.mengyun.tcctransaction.spring.TccTransactionContextAspect">
-        <property name="resourceCoordinatorInterceptor" ref="resourceCoordinatorInterceptor"/>
+    <bean id="resourceCoordinatorAspect" class="org.mengyun.tcctransaction.spring.ConfigurableCoordinatorAspect"
+          init-method="init">
+        <property name="transactionConfigurator" ref="transactionConfigurator"/>
     </bean>
 
     <task:annotation-driven/>
+
+
+    <bean id="transactionRecovery" class="org.mengyun.tcctransaction.recover.TransactionRecovery">
+        <property name="transactionConfigurator" ref="transactionConfigurator"/>
+    </bean>
 
     <bean id="recoverScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>
 
     <bean id="recoverScheduledJob" class="org.mengyun.tcctransaction.spring.recover.RecoverScheduledJob"
           init-method="init">
-        <property name="transactionConfigurator" ref="tccTransactionConfigurator"/>
         <property name="transactionRecovery" ref="transactionRecovery"/>
+        <property name="transactionConfigurator" ref="transactionConfigurator"/>
         <property name="scheduler" ref="recoverScheduler"/>
     </bean>
 
