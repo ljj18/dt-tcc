@@ -19,7 +19,7 @@ public class JdkSerializationSerializer<T extends Serializable> implements Objec
         if (bytes == null) {
             return null;
         } else {
-            return (T) SerializationUtils.deserialize(bytes);
+            return SerializationUtils.deserialize(bytes);
         }
     }
 

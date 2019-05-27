@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by liangjinjing on 2/23/17.
  */
+@ SuppressWarnings("rawtypes")
 public final class FactoryBuilder {
 
 
@@ -16,8 +17,10 @@ public final class FactoryBuilder {
 
     private static List<BeanFactory> beanFactories = new ArrayList<BeanFactory>();
 
+
     private static ConcurrentHashMap<Class, SingeltonFactory> classFactoryMap = new ConcurrentHashMap<Class, SingeltonFactory>();
 
+    @ SuppressWarnings("unchecked")
     public static <T> SingeltonFactory<T> factoryOf(Class<T> clazz) {
 
         if (!classFactoryMap.containsKey(clazz)) {
@@ -55,6 +58,7 @@ public final class FactoryBuilder {
             this.className = clazz.getName();
         }
 
+        @ SuppressWarnings("unchecked")
         public T getInstance() {
 
             if (instance == null) {

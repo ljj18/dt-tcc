@@ -40,6 +40,7 @@ public class KryoTransactionSerializer<T> implements ObjectSerializer<T> {
         return byteArrayOutputStream.toByteArray();
     }
 
+    @ SuppressWarnings("unchecked")
     public static <T> T readFromByteArray(byte[] byteArray) {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArray);
         Input input = new Input(byteArrayInputStream);

@@ -4,7 +4,8 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ljj.tcc.api.TransactionContext;
 import com.ljj.tcc.api.TransactionStatus;
@@ -15,7 +16,7 @@ import com.ljj.tcc.core.common.TransactionType;
  */
 public class TransactionManager {
 
-    static final Logger logger = Logger.getLogger(TransactionManager.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(TransactionManager.class);
 
     private TransactionRepository transactionRepository;
 

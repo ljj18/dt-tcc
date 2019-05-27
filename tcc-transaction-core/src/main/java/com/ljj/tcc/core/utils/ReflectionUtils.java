@@ -19,6 +19,7 @@ public class ReflectionUtils {
         }
     }
 
+    @ SuppressWarnings("unchecked")
     public static Object changeAnnotationValue(Annotation annotation, String key, Object newValue) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         Object handler = Proxy.getInvocationHandler(annotation);
 
@@ -44,17 +45,17 @@ public class ReflectionUtils {
         return oldValue;
     }
 
-    public static Class getDeclaringType(Class aClass, String methodName, Class<?>[] parameterTypes) {
+    public static Class<?> getDeclaringType(Class<?> aClass, String methodName, Class<?>[] parameterTypes) {
 
         Method method = null;
 
 
-        Class findClass = aClass;
+        Class<?> findClass = aClass;
 
         do {
-            Class[] clazzes = findClass.getInterfaces();
+            Class<?>[] clazzes = findClass.getInterfaces();
 
-            for (Class clazz : clazzes) {
+            for (Class<?> clazz : clazzes) {
 
                 try {
                     method = clazz.getDeclaredMethod(methodName, parameterTypes);
@@ -74,7 +75,7 @@ public class ReflectionUtils {
         return aClass;
     }
 
-    public static Object getNullValue(Class type) {
+    public static Object getNullValue(Class<?> type) {
 
         if (boolean.class.equals(type)) {
             return false;

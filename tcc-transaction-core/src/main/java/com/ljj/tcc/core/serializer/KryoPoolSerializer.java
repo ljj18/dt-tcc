@@ -72,11 +72,12 @@ public class KryoPoolSerializer<T> implements ObjectSerializer<T> {
     public T deserialize(final byte[] bytes) {
 
         return pool.run(new KryoCallback<T>() {
+            @ SuppressWarnings("unchecked")
             public T execute(Kryo kryo) {
                 ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
                 Input input = new Input(byteArrayInputStream);
 
-                return (T) kryo.readClassAndObject(input);
+                return (T)kryo.readClassAndObject(input);
             }
         });
     }

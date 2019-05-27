@@ -6,8 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.ljj.tcc.api.TransactionStatus;
@@ -23,7 +24,7 @@ import com.ljj.tcc.core.utils.TransactionUtils;
  */
 public class CompensableTransactionInterceptor {
 
-    static final Logger logger = Logger.getLogger(CompensableTransactionInterceptor.class.getSimpleName());
+    static final Logger logger = LoggerFactory.getLogger(CompensableTransactionInterceptor.class);
 
     private TransactionManager transactionManager;
 

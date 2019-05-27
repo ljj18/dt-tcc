@@ -5,14 +5,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
-
-<<<<<<< HEAD
     <!--<context:component-scan base-package="org.mengyun.tcctransaction.spring"/>-->
 
     <bean id="tccApplicationContext" class="org.mengyun.tcctransaction.spring.support.TccApplicationContext"/>
-=======
     <bean id="springBeanFactory" class="org.mengyun.tcctransaction.spring.support.SpringBeanFactory"/>
->>>>>>> master-1.2.x
 
 
     <bean id="transactionConfigurator" class="org.mengyun.tcctransaction.spring.support.SpringTransactionConfigurator"

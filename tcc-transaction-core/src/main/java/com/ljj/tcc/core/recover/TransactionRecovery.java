@@ -6,7 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ljj.tcc.api.TransactionStatus;
@@ -21,7 +22,7 @@ import com.ljj.tcc.core.support.TransactionConfigurator;
  */
 public class TransactionRecovery {
 
-    static final Logger logger = Logger.getLogger(TransactionRecovery.class.getSimpleName());
+    static final Logger logger = LoggerFactory.getLogger(TransactionRecovery.class);
 
     private TransactionConfigurator transactionConfigurator;
 

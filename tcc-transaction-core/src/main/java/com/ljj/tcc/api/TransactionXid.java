@@ -147,6 +147,7 @@ public class TransactionXid implements Xid, Serializable {
         return bb.array();
     }
 
+    @ SuppressWarnings("unused")
     private static UUID byteArrayToUUID(byte[] bytes) {
         ByteBuffer bb = ByteBuffer.wrap(bytes);
         long firstLong = bb.getLong();
