@@ -1,8 +1,9 @@
 
 package com.ljj.tcc.core.recover;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -10,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSONObject;
-
 import com.ljj.tcc.api.TransactionPhase;
 import com.ljj.tcc.api.TransactionType;
 import com.ljj.tcc.core.OptimisticLockException;
@@ -49,8 +49,8 @@ public class TransactionRecovery {
         long currentTimeInMillis = Calendar.getInstance().getTimeInMillis();
         TransactionRepository transactionRepository = transactionConfigurator.getTransactionRepository();
         RecoverConfig recoverConfig = transactionConfigurator.getRecoverConfig();
-        return transactionRepository
-            .findAllUnmodifiedSince(new Date(currentTimeInMillis - recoverConfig.getRecoverDuration() * 1000));
+        LocalDateTime ldt = LocalDateTime.ofEpochSecond(currentTimeInMillis - recoverConfig.getRecoverDuration() * 1000, 0, ZoneOffset.of("+8")); 
+        return transactionRepository.findAllUnmodifiedSince(ldt);
     }
 
     private void recoverErrorTransactions(List<Transaction> transactions) {
@@ -61,13 +61,13 @@ public class TransactionRecovery {
 
                 logger.error(String.format(
                     "recover failed with max retry count,will not try again. txid:%s, status:%s,retried count:%d,transaction content:%s",
-                    transaction.getXid(), transaction.getStatus().getId(), transaction.getRetriedCount(),
+                    transaction.getXid(), transaction.getPhase().getId(), transaction.getRetriedCount(),
                     JSONObject.toJSONString(transaction)));
                 continue;
             }
 
             if (transaction.getTransactionType().equals(TransactionType.BRANCH)
-                && (transaction.getCreateTime().getTime()
+                && (transaction.getGmtCreate().toInstant(ZoneOffset.of("+8")).toEpochMilli()
                     + transactionConfigurator.getRecoverConfig().getMaxRetryCount()
                         * transactionConfigurator.getRecoverConfig().getRecoverDuration() * 1000 > System
                             .currentTimeMillis())) {
@@ -77,17 +77,17 @@ public class TransactionRecovery {
             try {
                 transaction.addRetriedCount();
 
-                if (transaction.getStatus().equals(TransactionPhase.CONFIRMING)) {
+                if (transaction.getPhase().equals(TransactionPhase.CONFIRMING)) {
 
-                    transaction.changeStatus(TransactionPhase.CONFIRMING);
+                    transaction.changePhase(TransactionPhase.CONFIRMING);
                     transactionConfigurator.getTransactionRepository().update(transaction);
                     transaction.commit();
                     transactionConfigurator.getTransactionRepository().delete(transaction);
 
-                } else if (transaction.getStatus().equals(TransactionPhase.CANCELLING)
+                } else if (transaction.getPhase().equals(TransactionPhase.CANCELLING)
                     || transaction.getTransactionType().equals(TransactionType.ROOT)) {
 
-                    transaction.changeStatus(TransactionPhase.CANCELLING);
+                    transaction.changePhase(TransactionPhase.CANCELLING);
                     transactionConfigurator.getTransactionRepository().update(transaction);
                     transaction.rollback();
                     transactionConfigurator.getTransactionRepository().delete(transaction);
@@ -99,12 +99,12 @@ public class TransactionRecovery {
                     || ExceptionUtils.getRootCause(throwable) instanceof OptimisticLockException) {
                     logger.warn(String.format(
                         "optimisticLockException happened while recover. txid:%s, status:%s,retried count:%d,transaction content:%s",
-                        transaction.getXid(), transaction.getStatus().getId(), transaction.getRetriedCount(),
+                        transaction.getXid(), transaction.getPhase().getId(), transaction.getRetriedCount(),
                         JSONObject.toJSONString(transaction)), throwable);
                 } else {
                     logger.error(
                         String.format("recover failed, txid:%s, status:%s,retried count:%d,transaction content:%s",
-                            transaction.getXid(), transaction.getStatus().getId(), transaction.getRetriedCount(),
+                            transaction.getXid(), transaction.getPhase().getId(), transaction.getRetriedCount(),
                             JSONObject.toJSONString(transaction)),
                         throwable);
                 }

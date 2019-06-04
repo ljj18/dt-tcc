@@ -79,7 +79,7 @@ public class TransactionManager {
     public Transaction propagationExistBegin(TransactionContext transactionContext) throws NoExistedTransactionException {
         Transaction transaction = transactionRepository.findByXid(transactionContext.getXid());
         if (transaction != null) {
-            transaction.changeStatus(TransactionPhase.valueOf(transactionContext.getPhase()));
+            transaction.changePhase(TransactionPhase.valueOf(transactionContext.getPhase()));
             registerTransaction(transaction);
             return transaction;
         } else {
@@ -89,7 +89,7 @@ public class TransactionManager {
 
     public void commit(boolean asyncCommit) {
         final Transaction transaction = getCurrentTransaction();
-        transaction.changeStatus(TransactionPhase.CONFIRMING);
+        transaction.changePhase(TransactionPhase.CONFIRMING);
         transactionRepository.update(transaction);
         if (asyncCommit) {
             try {
@@ -113,7 +113,7 @@ public class TransactionManager {
 
     public void rollback(boolean asyncRollback) {
         final Transaction transaction = getCurrentTransaction();
-        transaction.changeStatus(TransactionPhase.CANCELLING);
+        transaction.changePhase(TransactionPhase.CANCELLING);
         transactionRepository.update(transaction);
         if (asyncRollback) {
             try {

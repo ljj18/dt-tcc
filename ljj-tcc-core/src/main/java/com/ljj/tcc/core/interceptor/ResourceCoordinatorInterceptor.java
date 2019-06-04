@@ -33,7 +33,7 @@ public class ResourceCoordinatorInterceptor {
 
         Transaction transaction = transactionManager.getCurrentTransaction();
         if (transaction != null) {
-            switch (transaction.getStatus()) {
+            switch (transaction.getPhase()) {
                 case TRYING:
                     enlistParticipant(pjp);
                     break;

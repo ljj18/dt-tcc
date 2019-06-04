@@ -1,7 +1,7 @@
 package com.ljj.tcc.core.repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.xa.Xid;
@@ -20,7 +20,13 @@ import com.ljj.tcc.core.serializer.KryoPoolSerializer;
 import com.ljj.tcc.core.serializer.ObjectSerializer;
 
 /**
- * Created by liangjinjing on 2/18/16.
+ * 事务持久化到ZooKeeper
+ * Version 1.0.0
+ * 
+ * @author liangjinjing
+ * 
+ * Date 2019-05-24 11:34
+ * 
  */
 public class ZooKeeperTransactionRepository extends CachableTransactionRepository {
 
@@ -32,15 +38,13 @@ public class ZooKeeperTransactionRepository extends CachableTransactionRepositor
 
     private volatile ZooKeeper zk;
 
-    @ SuppressWarnings("rawtypes")
-    private ObjectSerializer serializer = new KryoPoolSerializer();
+    private ObjectSerializer<Transaction> serializer = new KryoPoolSerializer<Transaction>();
 
     public ZooKeeperTransactionRepository() {
         super();
     }
 
-    @ SuppressWarnings("rawtypes")
-    public void setSerializer(ObjectSerializer serializer) {
+    public void setSerializer(ObjectSerializer<Transaction> serializer) {
         this.serializer = serializer;
     }
 
@@ -117,14 +121,14 @@ public class ZooKeeperTransactionRepository extends CachableTransactionRepositor
     }
 
     @Override
-    protected List<Transaction> doFindAllUnmodifiedSince(Date date) {
+    protected List<Transaction> doFindAllUnmodifiedSince(LocalDateTime date) {
 
         List<Transaction> allTransactions = doFindAll();
 
         List<Transaction> allUnmodifiedSince = new ArrayList<Transaction>();
 
         for (Transaction transaction : allTransactions) {
-            if (transaction.getLastUpdateTime().compareTo(date) < 0) {
+            if (transaction.getGmtMidified().compareTo(date) < 0) {
                 allUnmodifiedSince.add(transaction);
             }
         }

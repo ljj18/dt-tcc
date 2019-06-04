@@ -2,8 +2,8 @@ package com.ljj.tcc.core;
 
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,15 +31,15 @@ public class Transaction implements Serializable {
 
     private TransactionXid xid;
 
-    private TransactionPhase status;
+    private TransactionPhase phase;
 
     private TransactionType transactionType;
 
     private volatile int retriedCount = 0;
 
-    private Date createTime = new Date();
+    private LocalDateTime gmtCreate = LocalDateTime.now();
 
-    private Date lastUpdateTime = new Date();
+    private LocalDateTime gmtMidified = LocalDateTime.now();
 
     private long version = 1;
 
@@ -53,20 +53,20 @@ public class Transaction implements Serializable {
 
     public Transaction(TransactionContext transactionContext) {
         this.xid = transactionContext.getXid();
-        this.status = TransactionPhase.TRYING;
+        this.phase = TransactionPhase.TRYING;
         this.transactionType = TransactionType.BRANCH;
     }
 
     public Transaction(TransactionType transactionType) {
         this.xid = new TransactionXid();
-        this.status = TransactionPhase.TRYING;
+        this.phase = TransactionPhase.TRYING;
         this.transactionType = transactionType;
     }
 
     public Transaction(Object uniqueIdentity,TransactionType transactionType) {
 
         this.xid = new TransactionXid(uniqueIdentity);
-        this.status = TransactionPhase.TRYING;
+        this.phase = TransactionPhase.TRYING;
         this.transactionType = transactionType;
     }
 
@@ -79,8 +79,8 @@ public class Transaction implements Serializable {
         return xid.clone();
     }
 
-    public TransactionPhase getStatus() {
-        return status;
+    public TransactionPhase getPhase() {
+        return phase;
     }
 
 
@@ -92,8 +92,8 @@ public class Transaction implements Serializable {
         return transactionType;
     }
 
-    public void changeStatus(TransactionPhase status) {
-        this.status = status;
+    public void changePhase(TransactionPhase phase) {
+        this.phase = phase;
     }
 
 
@@ -137,21 +137,39 @@ public class Transaction implements Serializable {
         this.version = version;
     }
 
-    public Date getLastUpdateTime() {
-        return lastUpdateTime;
+    /**
+     * @return Returns the gmtCreate.
+     */
+    public LocalDateTime getGmtCreate() {
+        return gmtCreate;
     }
 
-    public void setLastUpdateTime(Date date) {
-        this.lastUpdateTime = date;
+    /**
+     * @param gmtCreate The gmtCreate to set.
+     */
+    public void setGmtCreate(LocalDateTime gmtCreate) {
+        this.gmtCreate = gmtCreate;
     }
 
-    public Date getCreateTime() {
-        return createTime;
+    /**
+     * @return Returns the gmtMidified.
+     */
+    public LocalDateTime getGmtMidified() {
+        return gmtMidified;
     }
 
+    /**
+     * @param gmtMidified The gmtMidified to set.
+     */
+    public void setGmtMidified(LocalDateTime gmtMidified) {
+        this.gmtMidified = gmtMidified;
+    }
+
+    /**
+     * 
+     */
     public void updateTime() {
-        this.lastUpdateTime = new Date();
+        this.gmtMidified =  LocalDateTime.now();
     }
-
 
 }

@@ -10,7 +10,7 @@ CREATE TABLE `tcc_transaction` (
   `global_tx_id` varchar(32) NOT NULL COMMENT '全局事务ID',
   `branch_qualifier` varchar(32) NOT NULL COMMENT '分支限定符',
   `content` varbinary(8000) DEFAULT NULL COMMENT '序列化后事务实例',
-  `status` tinyint(1) DEFAULT NULL COMMENT '事务阶段: 1=try,2=confirm,3=cancel',
+  `phase` tinyint(1) DEFAULT NULL COMMENT '事务阶段: 1=try,2=confirm,3=cancel',
   `transaction_type` tinyint(1) DEFAULT NULL COMMENT '事务类型: 1=root, 2=branch',
   `deleted` tinyint(1) DEFAULT NULL COMMENT '是否删除:1=删除,0=没有删除',
   `retried_count` tinyint(3) DEFAULT NULL COMMENT '重试次数',

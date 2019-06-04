@@ -1,21 +1,19 @@
 package com.ljj.tcc.core.repository.helper;
 
-import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
-
 import com.alibaba.fastjson.JSON;
 import com.ljj.tcc.api.TransactionPhase;
-import com.ljj.tcc.core.SystemException;
+import com.ljj.tcc.core.ColumnName;
 import com.ljj.tcc.core.Transaction;
 import com.ljj.tcc.core.serializer.ObjectSerializer;
 import com.ljj.tcc.core.utils.ByteUtils;
 
 /**
- * 事务
+ * 扩展 Transaction 序列化 
  * 
  * Version 1.0.0
  * 
@@ -24,48 +22,39 @@ import com.ljj.tcc.core.utils.ByteUtils;
  * Date 2019-05-24 11:34
  * 
  */
-@ SuppressWarnings("rawtypes")
 public class ExpandTransactionSerializer {
 
+    private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
-    @ SuppressWarnings("unchecked")
-    public static Map<byte[], byte[]> serialize(ObjectSerializer serializer, Transaction transaction) {
+    
+    public static Map<byte[], byte[]> serialize(ObjectSerializer<Transaction> serializer, Transaction transaction) {
 
         Map<byte[], byte[]> map = new HashMap<byte[], byte[]>();
-
-        map.put("GLOBAL_TX_ID".getBytes(), transaction.getXid().getGlobalTransactionId());
-        map.put("BRANCH_QUALIFIER".getBytes(), transaction.getXid().getBranchQualifier());
-        map.put("STATUS".getBytes(), ByteUtils.intToBytes(transaction.getStatus().getId()));
-        map.put("TRANSACTION_TYPE".getBytes(), ByteUtils.intToBytes(transaction.getTransactionType().getId()));
-        map.put("RETRIED_COUNT".getBytes(), ByteUtils.intToBytes(transaction.getRetriedCount()));
-        map.put("CREATE_TIME".getBytes(), DateFormatUtils.format(transaction.getCreateTime(), "yyyy-MM-dd HH:mm:ss").getBytes());
-        map.put("LAST_UPDATE_TIME".getBytes(), DateFormatUtils.format(transaction.getLastUpdateTime(), "yyyy-MM-dd HH:mm:ss").getBytes());
-        map.put("VERSION".getBytes(), ByteUtils.longToBytes(transaction.getVersion()));
-        map.put("CONTENT".getBytes(), serializer.serialize(transaction));
-        map.put("CONTENT_VIEW".getBytes(), JSON.toJSONString(transaction).getBytes());
+        
+        map.put(ColumnName.GLOBAL_TX_ID.getBytes(), transaction.getXid().getGlobalTransactionId());
+        map.put(ColumnName.BRANCH_QUALIFIER.getBytes(), transaction.getXid().getBranchQualifier());
+        map.put(ColumnName.PHASE.getBytes(), ByteUtils.intToBytes(transaction.getPhase().getId()));
+        map.put(ColumnName.TRANSACTION_TYPE.getBytes(), ByteUtils.intToBytes(transaction.getTransactionType().getId()));
+        map.put(ColumnName.RETRIED_COUNT.getBytes(), ByteUtils.intToBytes(transaction.getRetriedCount()));
+        map.put(ColumnName.GMT_CREATE.getBytes(), DTF.format(transaction.getGmtCreate()).getBytes());
+        map.put(ColumnName.GMT_MODIFIED.getBytes(), DTF.format(transaction.getGmtMidified()).getBytes());
+        map.put(ColumnName.VERSION.getBytes(), ByteUtils.longToBytes(transaction.getVersion()));
+        map.put(ColumnName.CONTENT.getBytes(), serializer.serialize(transaction));
+        map.put("content_view".getBytes(), JSON.toJSONString(transaction).getBytes());
         return map;
     }
 
-    public static Transaction deserialize(ObjectSerializer serializer, Map<byte[], byte[]> map1) {
-
+    public static Transaction deserialize(ObjectSerializer<Transaction> serializer, Map<byte[], byte[]> map1) {
         Map<String, byte[]> propertyMap = new HashMap<String, byte[]>();
-
         for (Map.Entry<byte[], byte[]> entry : map1.entrySet()) {
             propertyMap.put(new String(entry.getKey()), entry.getValue());
         }
-
-        byte[] content = propertyMap.get("CONTENT");
+        byte[] content = propertyMap.get(ColumnName.CONTENT);
         Transaction transaction = (Transaction) serializer.deserialize(content);
-        transaction.changeStatus(TransactionPhase.valueOf(ByteUtils.bytesToInt(propertyMap.get("STATUS"))));
-        transaction.resetRetriedCount(ByteUtils.bytesToInt(propertyMap.get("RETRIED_COUNT")));
-
-        try {
-            transaction.setLastUpdateTime(DateUtils.parseDate(new String(propertyMap.get("LAST_UPDATE_TIME")), "yyyy-MM-dd HH:mm:ss"));
-        } catch (ParseException e) {
-            throw new SystemException(e);
-        }
-
-        transaction.setVersion(ByteUtils.bytesToLong(propertyMap.get("VERSION")));
+        transaction.changePhase(TransactionPhase.valueOf(ByteUtils.bytesToInt(propertyMap.get(ColumnName.PHASE))));
+        transaction.resetRetriedCount(ByteUtils.bytesToInt(propertyMap.get(ColumnName.RETRIED_COUNT)));
+        transaction.setGmtMidified(LocalDateTime.parse(new String(propertyMap.get(ColumnName.GMT_MODIFIED)), DTF));
+        transaction.setVersion(ByteUtils.bytesToLong(propertyMap.get(ColumnName.VERSION)));
         return transaction;
     }
 }

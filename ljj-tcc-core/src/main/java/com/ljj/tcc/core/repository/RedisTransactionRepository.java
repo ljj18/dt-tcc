@@ -1,8 +1,8 @@
 package com.ljj.tcc.core.repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +34,6 @@ import redis.clients.jedis.ScanResult;
  * appendonly yes
  * appendfsync always
  */
-@ SuppressWarnings("rawtypes")
 public class RedisTransactionRepository extends CachableTransactionRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(RedisTransactionRepository.class.getSimpleName());
@@ -54,9 +53,9 @@ public class RedisTransactionRepository extends CachableTransactionRepository {
     }
 
     
-    private ObjectSerializer serializer = new KryoPoolSerializer();
+    private ObjectSerializer<Transaction> serializer = new KryoPoolSerializer<Transaction>();
 
-    public void setSerializer(ObjectSerializer serializer) {
+    public void setSerializer(ObjectSerializer<Transaction> serializer) {
         this.serializer = serializer;
     }
 
@@ -99,7 +98,6 @@ public class RedisTransactionRepository extends CachableTransactionRepository {
 
                 @Override
                 public Long doInJedis(Jedis jedis) {
-
 
                     List<byte[]> params = new ArrayList<byte[]>();
 
@@ -195,14 +193,14 @@ public class RedisTransactionRepository extends CachableTransactionRepository {
     }
 
     @Override
-    protected List<Transaction> doFindAllUnmodifiedSince(Date date) {
+    protected List<Transaction> doFindAllUnmodifiedSince(LocalDateTime date) {
 
         List<Transaction> allTransactions = doFindAll();
 
         List<Transaction> allUnmodifiedSince = new ArrayList<Transaction>();
 
         for (Transaction transaction : allTransactions) {
-            if (transaction.getLastUpdateTime().compareTo(date) < 0) {
+            if (transaction.getGmtMidified().compareTo(date) < 0) {
                 allUnmodifiedSince.add(transaction);
             }
         }

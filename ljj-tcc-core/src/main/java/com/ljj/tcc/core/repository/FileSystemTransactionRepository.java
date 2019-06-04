@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.xa.Xid;
@@ -19,10 +19,14 @@ import com.ljj.tcc.core.serializer.KryoPoolSerializer;
 import com.ljj.tcc.core.serializer.ObjectSerializer;
 
 /**
- * Created by liangjinjing on 2/24/16.
- * this repository is suitable for single node, not for cluster nodes
+ * 事务持久化到文件
+ * Version 1.0.0
+ * 
+ * @author liangjinjing
+ * 
+ * Date 2019-05-24 11:34
+ * 
  */
-@ SuppressWarnings("rawtypes")
 public class FileSystemTransactionRepository extends CachableTransactionRepository {
 
     private String rootPath = "/tcc";
@@ -30,9 +34,9 @@ public class FileSystemTransactionRepository extends CachableTransactionReposito
     private volatile boolean initialized;
 
     
-    private ObjectSerializer serializer = new KryoPoolSerializer();
+    private ObjectSerializer<Transaction> serializer = new KryoPoolSerializer<Transaction>();
 
-    public void setSerializer(ObjectSerializer serializer) {
+    public void setSerializer(ObjectSerializer<Transaction> serializer) {
         this.serializer = serializer;
     }
 
@@ -80,14 +84,14 @@ public class FileSystemTransactionRepository extends CachableTransactionReposito
     }
 
     @Override
-    protected List<Transaction> doFindAllUnmodifiedSince(Date date) {
+    protected List<Transaction> doFindAllUnmodifiedSince(LocalDateTime date) {
 
         List<Transaction> allTransactions = doFindAll();
 
         List<Transaction> allUnmodifiedSince = new ArrayList<Transaction>();
 
         for (Transaction transaction : allTransactions) {
-            if (transaction.getLastUpdateTime().compareTo(date) < 0) {
+            if (transaction.getGmtMidified().compareTo(date) < 0) {
                 allUnmodifiedSince.add(transaction);
             }
         }
